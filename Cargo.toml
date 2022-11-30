@@ -6,7 +6,7 @@ it outputs the indices into the page tables for both, 32-bit and 64-bit paging.
 """
 version = "0.1.0"
 edition = "2021"
-keywords = ["paging", "page table"]
+keywords = ["paging", "page-table"]
 categories = ["command-line-utilities"]
 readme = "README.md"
 license = "MIT"

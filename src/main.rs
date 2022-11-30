@@ -124,8 +124,8 @@ impl Architecture {
                 print!("level 1 bits  : 0b");
                 Self::print_relevant_bits::<10, 12>(l1_index, l1_shift, 1);
                 println!();
-                println!("level 2 index : 0x{l2_index:016x} / {l2_index:>10}");
-                println!("level 1 index : 0x{l1_index:016x} / {l1_index:>10}");
+                println!("level 2 index : 0x{l2_index:04x} / {l2_index:>10}");
+                println!("level 1 index : 0x{l1_index:04x} / {l1_index:>10}");
 
                 println!();
 
@@ -156,10 +156,10 @@ impl Architecture {
                 Self::print_relevant_bits::<9, 12>(l1_index, l1_shift, 1);
                 println!();
 
-                println!("level 4 index : 0x{l4_index:016x} / {l4_index:>10}");
-                println!("level 3 index : 0x{l3_index:016x} / {l3_index:>10}");
-                println!("level 2 index : 0x{l2_index:016x} / {l2_index:>10}");
-                println!("level 1 index : 0x{l1_index:016x} / {l1_index:>10}");
+                println!("level 4 index : 0x{l4_index:04x} / {l4_index:>10}");
+                println!("level 3 index : 0x{l3_index:04x} / {l3_index:>10}");
+                println!("level 2 index : 0x{l2_index:04x} / {l2_index:>10}");
+                println!("level 1 index : 0x{l1_index:04x} / {l1_index:>10}");
             }
         }
     }
