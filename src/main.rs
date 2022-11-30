@@ -1,3 +1,52 @@
+/*
+MIT License
+
+Copyright (c) 2022 Philipp Schuster
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+//! CLI utility that helps you to calculate indices into the page table from a virtual address. For
+//! x86, it outputs the indices into the page tables for both, 32-bit and 64-bit paging.
+
+#![deny(
+    clippy::all,
+    clippy::cargo,
+    clippy::nursery,
+    // clippy::restriction,
+    // clippy::pedantic
+)]
+// now allow a few rules which are denied by the above statement
+// --> they are ridiculous and not necessary
+#![allow(
+    clippy::suboptimal_flops,
+    clippy::redundant_pub_crate,
+    clippy::fallible_impl_from
+)]
+// I can't do anything about this; fault of the dependencies
+#![allow(clippy::multiple_crate_versions)]
+// allow: required because of derive_more::Display macro
+#![allow(clippy::use_self)]
+#![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
+#![deny(rustdoc::all)]
+
 use clap::{Parser, ValueEnum};
 use derive_more::Display;
 use nu_ansi_term::{Color, Style};
@@ -60,10 +109,13 @@ impl Architecture {
         match self {
             Architecture::X86 => {
                 // 32-bit mode
-                let (l2_index, _l2_bits, l2_shift) = calculate_page_table_index::<10, 12>(addr.0, 2);
-                let (l1_index, _l1_bits, l1_shift)  = calculate_page_table_index::<10, 12>(addr.0, 1);
+                let (l2_index, _l2_bits, l2_shift) =
+                    calculate_page_table_index::<10, 12>(addr.0, 2);
+                let (l1_index, _l1_bits, l1_shift) =
+                    calculate_page_table_index::<10, 12>(addr.0, 1);
 
                 println!("{}", Style::new().bold().paint("x86 32-bit paging"));
+                println!("Uses a 2-level page table and 10 bits to index into each table.");
                 println!("address       : {addr}");
                 println!("address (bits): 0b{:064b}", addr.0);
                 print!("level 2 bits  : 0b");
@@ -80,10 +132,11 @@ impl Architecture {
                 // 364-bit mode
                 let (l4_index, _l4_bits, l4_shift) = calculate_page_table_index::<9, 12>(addr.0, 4);
                 let (l3_index, _l3_bits, l3_shift) = calculate_page_table_index::<9, 12>(addr.0, 3);
-                let (l2_index, _l2_bits, l2_shift)  = calculate_page_table_index::<9, 12>(addr.0, 2);
-                let (l1_index, _l1_bits, l1_shift)  = calculate_page_table_index::<9, 12>(addr.0, 1);
+                let (l2_index, _l2_bits, l2_shift) = calculate_page_table_index::<9, 12>(addr.0, 2);
+                let (l1_index, _l1_bits, l1_shift) = calculate_page_table_index::<9, 12>(addr.0, 1);
 
                 println!("{}", Style::new().bold().paint("x86 64-bit paging"));
+                println!("Uses a 4-level page table and 9 bits to index into each table.");
                 println!("address       : {addr}");
                 println!("address (bits): 0b{:064b}", addr.0);
 
@@ -112,14 +165,25 @@ impl Architecture {
     }
 
     // Prints the relevant bits used for the indexing and highlights them in red.
-    fn print_relevant_bits<const INDEX_BITS: u64, const PAGE_OFFSET_BITS: u64>(index: u64, shift: u64, level: u64) {
+    fn print_relevant_bits<const INDEX_BITS: u64, const PAGE_OFFSET_BITS: u64>(
+        index: u64,
+        shift: u64,
+        level: u64,
+    ) {
         assert!(level > 0);
 
         use core::fmt::Write;
 
         let mut buf = String::new();
 
-        write!(&mut buf, "{}", Style::new().fg(Color::Red).paint(format!("{index:0bits$b}", bits = INDEX_BITS as usize))).unwrap();
+        write!(
+            &mut buf,
+            "{}",
+            Style::new()
+                .fg(Color::Red)
+                .paint(format!("{index:0bits$b}", bits = INDEX_BITS as usize))
+        )
+        .unwrap();
 
         let zeroes_after = shift;
         write!(&mut buf, "{}", "0".repeat(zeroes_after as usize)).unwrap();
@@ -148,10 +212,14 @@ impl VirtualAddress {
     const PREFIX: &'static str = "0x";
 }
 
+/// Describes errors that happened when users tries to input a [`VirtualAddress`]
+/// via the CLI.
 #[derive(Copy, Clone, Debug, Display, PartialOrd, PartialEq, Ord, Eq, Hash)]
-pub enum VirtualAddressError {
+enum VirtualAddressError {
+    /// The virtual address must beginn with the prefix 0x.
     #[display = "The virtual address must beginn with the prefix 0x."]
     MissingPrefix,
+    /// The virtual address could not be parsed as number.
     #[display = "The virtual address could not be parsed as number."]
     ParseIntError,
 }
@@ -173,7 +241,7 @@ impl FromStr for VirtualAddress {
         let s_without_prefix = &s.as_str()[VirtualAddress::PREFIX.len()..];
 
         u64::from_str_radix(s_without_prefix, 16)
-            .map(|num| VirtualAddress(num))
+            .map(VirtualAddress)
             .map_err(|_| VirtualAddressError::ParseIntError)
     }
 }
@@ -249,6 +317,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::identity_op)]
     fn test_calculate_page_table_index_64() {
         // a 32-bit address written so that it is separated by the corresponding levels
         // of page table on x86_64.
