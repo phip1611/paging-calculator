@@ -13,6 +13,9 @@ license = "MIT"
 homepage = "https://github.com/phip1611/paging-calculator"
 repository = "https://github.com/phip1611/paging-calculator"
 documentation = "https://docs.rs/paging-calculator"
+exclude = [
+    ".github"
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
