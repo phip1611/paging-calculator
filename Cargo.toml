@@ -1,0 +1,37 @@
+[package]
+name = "paging-calculator"
+description = """
+CLI utility that helps you to calculate indices into the page table from a virtual address. For x86,
+it outputs the indices into the page tables for both, 32-bit and 64-bit paging.
+"""
+version = "0.1.0"
+edition = "2021"
+keywords = ["paging", "page table"]
+categories = ["command-line-utilities"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/phip1611/paging-calculator"
+repository = "https://github.com/phip1611/paging-calculator"
+documentation = "https://docs.rs/paging-calculator"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.derive_more]
+version = "0.99"
+
+[dependencies.nu-ansi-term]
+version = "0.46"
+
+[dependencies.clap]
+version = "4.0"
+features = [
+    "std",
+    "color",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+    "derive",
+    "unicode",
+    "wrap_help"
+]

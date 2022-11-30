@@ -1,0 +1,52 @@
+name: Build
+
+# Triggers the workflow on push or pull request events (for any branch in a repository)
+on: [ push, pull_request ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - nightly
+          - 1.62.1 # MSVR
+    steps:
+      - uses: actions/checkout@v2
+      # Important preparation step: override the latest default Rust version in GitHub CI
+      # with the current value of the iteration in the "strategy.matrix.rust"-array.
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Build
+        run: cargo build --all-targets --verbose
+      - name: Run tests
+        run: cargo test --verbose
+
+  style_checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+    steps:
+      - uses: actions/checkout@v2
+      # Important preparation step: override the latest default Rust version in GitHub CI
+      # with the current value of the iteration in the "strategy.matrix.rust"-array.
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Rustfmt
+        run: cargo fmt -- --check
+      - name: Clippy
+        run: cargo clippy
+      - name: Rustdoc
+        run: cargo doc --document-private-items
