@@ -4,7 +4,7 @@ description = """
 CLI utility that helps you to calculate indices into the page table from a virtual address. For x86,
 it outputs the indices into the page tables for both, 32-bit and 64-bit paging.
 """
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 keywords = ["paging", "page-table"]
 categories = ["command-line-utilities"]

@@ -107,7 +107,6 @@ pub enum Architecture {
 }
 
 impl Architecture {
-
     fn print_paging_info(&self, addr: &VirtualAddress) {
         match self {
             Architecture::X86 => {
@@ -139,7 +138,10 @@ impl Architecture {
                 Self::print_relevant_bits::<10, 12, X86_ADDR_LEN>(l1_index, l1_shift, 1);
                 println!();
                 println!("level 2 entry index : {l2_index:>6}  (number of entry)");
-                println!("level 2 entry offset: 0x{:04x}  (offset into the page table for that entry)", l2_index * X86_ENTRY_SIZE);
+                println!(
+                    "level 2 entry offset: 0x{:04x}  (offset into the page table for that entry)",
+                    l2_index * X86_ENTRY_SIZE
+                );
                 println!("level 1 entry index : {l1_index:>6}");
                 println!("level 1 entry offset: 0x{:04x}", l1_index * X86_ENTRY_SIZE);
 
@@ -176,25 +178,44 @@ impl Architecture {
                 println!();
 
                 println!("level 4 entry index : {l4_index:>6}  (number of entry)");
-                println!("level 4 entry offset: 0x{:04x}  (offset into the page table for that entry)", l4_index * X86_64_ENTRY_SIZE);
+                println!(
+                    "level 4 entry offset: 0x{:04x}  (offset into the page table for that entry)",
+                    l4_index * X86_64_ENTRY_SIZE
+                );
                 println!("level 3 entry index : {l3_index:>6}");
-                println!("level 3 entry offset: 0x{:04x}", l3_index * X86_64_ENTRY_SIZE);
+                println!(
+                    "level 3 entry offset: 0x{:04x}",
+                    l3_index * X86_64_ENTRY_SIZE
+                );
                 println!("level 2 entry index : {l2_index:>6}");
-                println!("level 2 entry offset: 0x{:04x}", l2_index * X86_64_ENTRY_SIZE);
+                println!(
+                    "level 2 entry offset: 0x{:04x}",
+                    l2_index * X86_64_ENTRY_SIZE
+                );
                 println!("level 1 entry index : {l1_index:>6}");
-                println!("level 1 entry offset: 0x{:04x}", l1_index * X86_64_ENTRY_SIZE);
+                println!(
+                    "level 1 entry offset: 0x{:04x}",
+                    l1_index * X86_64_ENTRY_SIZE
+                );
             }
         }
     }
 
     // Prints the relevant bits used for the indexing and highlights them in red.
-    fn print_relevant_bits<const INDEX_BITS: u64, const PAGE_OFFSET_BITS: u64, const ADDR_LEN: u64>(
+    fn print_relevant_bits<
+        const INDEX_BITS: u64,
+        const PAGE_OFFSET_BITS: u64,
+        const ADDR_LEN: u64,
+    >(
         index: u64,
         shift: u64,
         level: u64,
     ) {
         assert!(level > 0);
-        assert!(ADDR_LEN == 32 || ADDR_LEN == 64, "only 32-bit or 64-bit addresses are supported");
+        assert!(
+            ADDR_LEN == 32 || ADDR_LEN == 64,
+            "only 32-bit or 64-bit addresses are supported"
+        );
 
         use core::fmt::Write;
 
