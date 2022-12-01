@@ -68,8 +68,10 @@ fn num_to_bitmask(mut val: u64) -> u64 {
 }
 
 /// Calculates the index into the page table for the given level and the amount of
-/// paging bits. It also returns down the bits that describes the relevant part
-/// of the address for the given level and the bitshift.
+/// paging bits. It returns a tuple with
+/// - the index into the page table (the index of the entry, not the byte offset!)
+/// - the address where only the bits are set that are relevant for the provided level
+/// - the amount how much the address was shifted, depending on the level
 ///
 /// # Parameters
 /// - `INDEX_BITS` - number of how many bits index into each page table (e.g. 10 on x86 or 9 on x86 with PAE or x86_64)
@@ -105,9 +107,18 @@ pub enum Architecture {
 }
 
 impl Architecture {
+
     fn print_paging_info(&self, addr: &VirtualAddress) {
         match self {
             Architecture::X86 => {
+                const X86_ENTRY_SIZE: u64 = 4;
+                const X86_64_ENTRY_SIZE: u64 = 8;
+                const X86_ADDR_LEN: u64 = 32;
+                const X86_64_ADDR_LEN: u64 = 64;
+
+                // truncated to 32-bit for the 32-bit representation
+                let bit32_address = addr.0 & 0xffffffff;
+
                 // 32-bit mode
                 let (l2_index, _l2_bits, l2_shift) =
                     calculate_page_table_index::<10, 12>(addr.0, 2);
@@ -115,17 +126,22 @@ impl Architecture {
                     calculate_page_table_index::<10, 12>(addr.0, 1);
 
                 println!("{}", Style::new().bold().paint("x86 32-bit paging"));
-                println!("Uses a 2-level page table and 10 bits to index into each table.");
-                println!("address       : {addr}");
-                println!("address (bits): 0b{:064b}", addr.0);
+                println!("- Uses a 2-level page table and 10 bits to index into each table.");
+                println!("- Each entry is 32-bit long. A page table has 1024 entries.");
+                println!("- Huge pages have a size of 2^22 == 4 MiB.");
+                println!();
+                println!("address       : 0x{:x}", bit32_address);
+                println!("address (bits): 0b{:032b}", bit32_address);
                 print!("level 2 bits  : 0b");
-                Self::print_relevant_bits::<10, 12>(l2_index, l2_shift, 2);
+                Self::print_relevant_bits::<10, 12, X86_ADDR_LEN>(l2_index, l2_shift, 2);
                 println!();
                 print!("level 1 bits  : 0b");
-                Self::print_relevant_bits::<10, 12>(l1_index, l1_shift, 1);
+                Self::print_relevant_bits::<10, 12, X86_ADDR_LEN>(l1_index, l1_shift, 1);
                 println!();
-                println!("level 2 index : 0x{l2_index:04x} / {l2_index:>10}");
-                println!("level 1 index : 0x{l1_index:04x} / {l1_index:>10}");
+                println!("level 2 entry index : {l2_index:>6}  (number of entry)");
+                println!("level 2 entry offset: 0x{:04x}  (offset into the page table for that entry)", l2_index * X86_ENTRY_SIZE);
+                println!("level 1 entry index : {l1_index:>6}");
+                println!("level 1 entry offset: 0x{:04x}", l1_index * X86_ENTRY_SIZE);
 
                 println!();
 
@@ -136,41 +152,49 @@ impl Architecture {
                 let (l1_index, _l1_bits, l1_shift) = calculate_page_table_index::<9, 12>(addr.0, 1);
 
                 println!("{}", Style::new().bold().paint("x86 64-bit paging"));
-                println!("Uses a 4-level page table and 9 bits to index into each table.");
+                println!("- Uses a 4-level page table and 9 bits to index into each table.");
+                println!("- Each entry is 64-bit long. A page table has 512 entries.");
+                println!("- Huge pages have a size of 2^21 == 2 MiB or 2^30 == 1 GiB.");
+                println!();
                 println!("address       : {addr}");
                 println!("address (bits): 0b{:064b}", addr.0);
 
                 print!("level 4 bits  : 0b");
-                Self::print_relevant_bits::<9, 12>(l4_index, l4_shift, 4);
+                Self::print_relevant_bits::<9, 12, X86_64_ADDR_LEN>(l4_index, l4_shift, 4);
                 println!();
 
                 print!("level 3 bits  : 0b");
-                Self::print_relevant_bits::<9, 12>(l3_index, l3_shift, 3);
+                Self::print_relevant_bits::<9, 12, X86_64_ADDR_LEN>(l3_index, l3_shift, 3);
                 println!();
 
                 print!("level 2 bits  : 0b");
-                Self::print_relevant_bits::<9, 12>(l2_index, l2_shift, 24);
+                Self::print_relevant_bits::<9, 12, X86_64_ADDR_LEN>(l2_index, l2_shift, 2);
                 println!();
 
                 print!("level 1 bits  : 0b");
-                Self::print_relevant_bits::<9, 12>(l1_index, l1_shift, 1);
+                Self::print_relevant_bits::<9, 12, X86_64_ADDR_LEN>(l1_index, l1_shift, 1);
                 println!();
 
-                println!("level 4 index : 0x{l4_index:04x} / {l4_index:>10}");
-                println!("level 3 index : 0x{l3_index:04x} / {l3_index:>10}");
-                println!("level 2 index : 0x{l2_index:04x} / {l2_index:>10}");
-                println!("level 1 index : 0x{l1_index:04x} / {l1_index:>10}");
+                println!("level 4 entry index : {l4_index:>6}  (number of entry)");
+                println!("level 4 entry offset: 0x{:04x}  (offset into the page table for that entry)", l4_index * X86_64_ENTRY_SIZE);
+                println!("level 3 entry index : {l3_index:>6}");
+                println!("level 3 entry offset: 0x{:04x}", l3_index * X86_64_ENTRY_SIZE);
+                println!("level 2 entry index : {l2_index:>6}");
+                println!("level 2 entry offset: 0x{:04x}", l2_index * X86_64_ENTRY_SIZE);
+                println!("level 1 entry index : {l1_index:>6}");
+                println!("level 1 entry offset: 0x{:04x}", l1_index * X86_64_ENTRY_SIZE);
             }
         }
     }
 
     // Prints the relevant bits used for the indexing and highlights them in red.
-    fn print_relevant_bits<const INDEX_BITS: u64, const PAGE_OFFSET_BITS: u64>(
+    fn print_relevant_bits<const INDEX_BITS: u64, const PAGE_OFFSET_BITS: u64, const ADDR_LEN: u64>(
         index: u64,
         shift: u64,
         level: u64,
     ) {
         assert!(level > 0);
+        assert!(ADDR_LEN == 32 || ADDR_LEN == 64, "only 32-bit or 64-bit addresses are supported");
 
         use core::fmt::Write;
 
@@ -189,7 +213,7 @@ impl Architecture {
         write!(&mut buf, "{}", "0".repeat(zeroes_after as usize)).unwrap();
 
         // 64: the app prints each string as u64
-        let zeroes_before = 64 - zeroes_after - INDEX_BITS;
+        let zeroes_before = ADDR_LEN - zeroes_after - INDEX_BITS;
 
         print!("{}", "0".repeat(zeroes_before as usize));
 
@@ -219,8 +243,8 @@ enum VirtualAddressError {
     /// The virtual address must beginn with the prefix 0x.
     #[display = "The virtual address must beginn with the prefix 0x."]
     MissingPrefix,
-    /// The virtual address could not be parsed as number.
-    #[display = "The virtual address could not be parsed as number."]
+    /// The virtual address could not be parsed as number as `u64`
+    #[display = "The virtual address could not be parsed as number as `u64`."]
     ParseIntError,
 }
 
@@ -242,7 +266,10 @@ impl FromStr for VirtualAddress {
 
         u64::from_str_radix(s_without_prefix, 16)
             .map(VirtualAddress)
-            .map_err(|_| VirtualAddressError::ParseIntError)
+            .map_err(|e| {
+                eprintln!("{}", e);
+                VirtualAddressError::ParseIntError
+            })
     }
 }
 
@@ -254,7 +281,7 @@ struct CliArgs {
     /// `0x1234_5678`. The `0x` prefix is required. It must be within the range of `u64`.
     virtual_address: VirtualAddress,
 
-    #[arg(short, long)]
+    #[arg(short, long, value_enum)]
     architecture: Option<Architecture>,
 }
 
