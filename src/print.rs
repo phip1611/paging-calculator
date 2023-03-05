@@ -24,17 +24,20 @@ SOFTWARE.
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// Whether ANSI escape sequences should be used or not.
+pub static USE_ANSI: AtomicBool = AtomicBool::new(false);
+
 use crate::addr_width::AddrWidth;
 use crate::cli::{CliArgs, VirtualAddress};
 use crate::page_table_index::PageTableLookupMetaInfo;
 use crate::paging_info::PagingImplInfo;
-use crate::print::ansi_styles::paint_hint;
-use nu_ansi_term::{Color, Style};
+use crate::print::ansi_styles::{paint_heading, paint_hint};
+use std::sync::atomic::AtomicBool;
 
 fn print_header(paging_info: &PagingImplInfo, v_addr: VirtualAddress) {
     print!(
         "{}",
-        Style::new().bold().paint(format!(
+        paint_heading(&format!(
             "Page Table Calculator (v{}): {}",
             CRATE_VERSION, paging_info.name
         ))
@@ -46,9 +49,7 @@ fn print_header(paging_info: &PagingImplInfo, v_addr: VirtualAddress) {
         println!(
             "address       : 0x{:x}  {info}",
             u64::from(v_addr) & 0xffffffff,
-            info = Style::new()
-                .fg(Color::LightGray)
-                .paint("(user input truncated to 32-bit)")
+            info = paint_hint("(user input truncated to 32-bit)")
         );
         println!("address (bits): 0b{:032b}", u64::from(v_addr) & 0xffffffff);
     } else {
@@ -129,13 +130,31 @@ fn print_relevant_bits_highlighted(info: &PageTableLookupMetaInfo, paging_info: 
 }
 
 mod ansi_styles {
+    use crate::print::USE_ANSI;
     use nu_ansi_term::{AnsiGenericString, Color, Style};
+    use std::sync::atomic::Ordering;
 
     pub fn paint_highlight(str: &str) -> AnsiGenericString<'_, str> {
-        Style::new().fg(Color::Red).bold().paint(str)
+        if USE_ANSI.load(Ordering::SeqCst) {
+            Style::new().fg(Color::Red).bold().paint(str)
+        } else {
+            Style::new().paint(str)
+        }
+    }
+
+    pub fn paint_heading(str: &str) -> AnsiGenericString<'_, str> {
+        if USE_ANSI.load(Ordering::SeqCst) {
+            Style::new().bold().paint(str)
+        } else {
+            Style::new().paint(str)
+        }
     }
 
     pub fn paint_hint(str: &str) -> AnsiGenericString<'_, str> {
-        Style::new().fg(Color::LightGray).paint(str)
+        if USE_ANSI.load(Ordering::SeqCst) {
+            Style::new().fg(Color::LightGray).paint(str)
+        } else {
+            Style::new().paint(str)
+        }
     }
 }

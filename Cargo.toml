@@ -24,6 +24,9 @@ codegen-units = 1
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[dependencies.atty]
+version = "0.2"
+
 [dependencies.derive_more]
 version = "0.99"
 

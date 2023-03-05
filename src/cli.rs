@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use std::error::Error;
 use std::fmt;
 use std::str::FromStr;
@@ -112,6 +112,22 @@ pub struct CliArgs {
     /// Architecture/Paging implementation.
     #[command(subcommand)]
     pub architecture: Architecture,
+
+    #[arg(long, value_enum)]
+    pub color: Option<ColorOption>,
+}
+
+/// Whether colors and other ANSI escape sequences should be used.
+#[derive(Copy, Clone, Debug, Default, PartialOrd, PartialEq, Ord, Eq, Hash, ValueEnum)]
+pub enum ColorOption {
+    /// Never use ANSI escape sequences.
+    Never,
+    /// Use ANSI escape sequences if stdout points to a TTY, i.e., is not
+    /// redirected.
+    #[default]
+    Auto,
+    /// Always use ANSI escape sequences.
+    Always,
 }
 
 /// Supported architectures with options. Each architecture is a subcommand of
