@@ -1,10 +1,11 @@
 [package]
 name = "paging-calculator"
 description = """
-CLI utility that helps you to calculate indices into the page table from a virtual address. For x86,
-it outputs the indices into the page tables for both, 32-bit and 64-bit paging.
+CLI utility that helps you to calculate indices into the page table from a
+virtual address. The tool knows multiple paging implementations, such as x86,
+x86 with PAE, x86_64 and x86_64 with a 5-level page table.
 """
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 keywords = ["paging", "page-table"]
 categories = ["command-line-utilities"]
@@ -17,6 +18,10 @@ exclude = [
     ".github"
 ]
 
+[profile.release]
+lto = true
+codegen-units = 1
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies.derive_more]
@@ -26,7 +31,7 @@ version = "0.99"
 version = "0.46"
 
 [dependencies.clap]
-version = "4.0"
+version = "4.1"
 features = [
     "std",
     "color",

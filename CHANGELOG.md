@@ -1,5 +1,11 @@
 # Changelog for Paging Address Calculator / `paging-calculator`
 
+## v0.2.0 (2023-03-05)
+- more functionality, such as `$ paging-calculator 0xdeadbeef x86 --pae` to get
+  page table indices for x86 with the physical address extension (PAE). Type
+  `$ paging-calculator help` for more instructions.
+- MSRV is `1.64.0`
+
 ## v0.1.2 (2022-12-01)
 - minor internal fixes
 
