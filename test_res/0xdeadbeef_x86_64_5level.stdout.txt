@@ -1,0 +1,24 @@
+Page Table Calculator (v0.2.0): x86_64 paging (5-level)
+x86_64 paging optionally uses a 5-level page table. The page is indexed
+by 12 bits, which results in a page-size of 4096 bytes. Each page table is
+indexed by 9 bits and has 2^9 == 512 entries. Each page-table entry is 64-bit in
+size. Hence, a page table occupies the size of a page. Huge pages have a size of
+2^21 == 2 MiB or 2^30 == 1 GiB. Huge pages are only valid on levels 2 or 3.
+
+address       : 0x00000000deadbeef
+address (bits): 0b0000000000000000000000000000000011011110101011011011111011101111
+level 5 bits  : 0b0000000000000000000000000000000000000000000000000000000000000000
+level 4 bits  : 0b0000000000000000000000000000000000000000000000000000000000000000
+level 3 bits  : 0b0000000000000000000000000000000011000000000000000000000000000000
+level 2 bits  : 0b0000000000000000000000000000000000011110101000000000000000000000
+level 1 bits  : 0b0000000000000000000000000000000000000000000011011011000000000000
+level 5 entry index :      0  (number of entry)
+level 5 entry offset: 0x0000  (offset into the page table for that entry)
+level 4 entry index :      0
+level 4 entry offset: 0x0000
+level 3 entry index :      3
+level 3 entry offset: 0x0018
+level 2 entry index :    245
+level 2 entry offset: 0x07a8
+level 1 entry index :    219
+level 1 entry offset: 0x06d8

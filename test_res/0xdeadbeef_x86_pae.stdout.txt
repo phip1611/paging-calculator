@@ -1,0 +1,21 @@
+Page Table Calculator (v0.2.0): x86 32-bit paging with PAE
+x86 with the Physical Address Extension (PAE) paging uses a 3-level page table,
+that enables to access more than 32-bit of physical address space. The page
+is indexed by 12 bits, which results in a page-size of 4096 bytes. Tables
+at level 1 and 2 are indexed by 9 bits and have 2^9 == 512 entries. The third-
+level page table is indexed by 2 bits and has 2^2 == 4 entries. Each page-table
+entry is 64-bit in size. Hence, a page table at levels 1 and 2 occupies the size
+of a page whereas the level 3 page table occupies 32 byte. Huge pages have a size
+of 2^21 == 2 MiB and are only valid on level 2.
+
+address       : 0xdeadbeef  (user input truncated to 32-bit)
+address (bits): 0b11011110101011011011111011101111
+level 3 bits  : 0b11000000000000000000000000000000
+level 2 bits  : 0b00011110101000000000000000000000
+level 1 bits  : 0b00000000000011011011000000000000
+level 3 entry index :      3  (number of entry)
+level 3 entry offset: 0x0018  (offset into the page table for that entry)
+level 2 entry index :    245
+level 2 entry offset: 0x07a8
+level 1 entry index :    219
+level 1 entry offset: 0x06d8
