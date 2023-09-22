@@ -5,7 +5,7 @@ CLI utility that helps you to calculate indices into the page table from a
 virtual address. The tool knows multiple paging implementations, such as x86,
 x86 with PAE, x86_64 and x86_64 with a 5-level page table.
 """
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 keywords = ["paging", "page-table"]
 categories = ["command-line-utilities"]
