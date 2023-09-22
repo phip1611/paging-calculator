@@ -19,7 +19,7 @@ The following screenshot summarizes its functionality:
 ![Screenshot showing the usage of paging-calculator.](screenshot.png "Screenshot showing the usage of paging-calculator.")
 
 # MSRV
-The MSRV is `1.64.0` stable.
+The MSRV is `1.70.0` stable.
 
 # Trivia
 I worked on a project where I need to set up page-tables on my own. I had a few problems to find out

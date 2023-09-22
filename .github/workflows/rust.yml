@@ -1,7 +1,7 @@
 name: Build
 
 # Triggers the workflow on push or pull request events (for any branch in a repository)
-on: [ push, pull_request ]
+on: [ push, pull_request, merge_group ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -14,16 +14,18 @@ jobs:
         rust:
           - stable
           - nightly
-          - 1.64.0 # MSVR
+          - 1.70.0 # MSVR
     steps:
-      - uses: actions/checkout@v3
-      # Important preparation step: override the latest default Rust version in GitHub CI
-      # with the current value of the iteration in the "strategy.matrix.rust"-array.
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: default
           toolchain: ${{ matrix.rust }}
-          override: true
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: "rust-${{ matrix.rust }}"
+      - name: Check
+        run: cargo check --all-targets --verbose
       - name: Build
         run: cargo build --all-targets --verbose
       - name: Run tests
@@ -32,7 +34,7 @@ jobs:
   cli:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Test CLI Output
         run: ./test_cli.sh
 
@@ -41,19 +43,20 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.64.0 # MSVR
+          - 1.70.0 # MSVR
     steps:
-      - uses: actions/checkout@v3
-      # Important preparation step: override the latest default Rust version in GitHub CI
-      # with the current value of the iteration in the "strategy.matrix.rust"-array.
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: default
           toolchain: ${{ matrix.rust }}
-          override: true
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: "rust-${{ matrix.rust }}"
       - name: Rustfmt
         run: cargo fmt -- --check
       - name: Clippy
-        run: cargo clippy
+        run: cargo clippy --all-targets
       - name: Rustdoc
-        run: cargo doc --document-private-items
+        run: cargo doc --document-private-items --no-deps

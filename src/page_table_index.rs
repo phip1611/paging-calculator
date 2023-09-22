@@ -197,7 +197,7 @@ mod tests {
                 l2_index, 0b111111111,
                 "Should be 0b111111111 but is {l2_index:#b}",
             );
-            let expected_bits: u64 = 0b111111111 << (9 * 1 + 12);
+            let expected_bits: u64 = 0b111111111 << (9 + 12);
             assert_eq!(
                 l2_bits, expected_bits,
                 "Should be {l2_bits:#b} but is {expected_bits:#b}"
@@ -274,7 +274,7 @@ mod tests {
                 l2_index, 0b111111111,
                 "Should be 0b111111111 but is {l2_index:#b}"
             );
-            let expected_bits: u64 = 0b111111111 << (1 * 9 + 12);
+            let expected_bits: u64 = 0b111111111 << (9 + 12);
             assert_eq!(
                 l2_bits, expected_bits,
                 "Should be {l2_bits:#b} but is {expected_bits:#b}"
