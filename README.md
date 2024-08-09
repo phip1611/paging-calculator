@@ -18,6 +18,9 @@ The following screenshot summarizes its functionality:
 
 ![Screenshot showing the usage of paging-calculator.](screenshot.png "Screenshot showing the usage of paging-calculator.")
 
+# Supported Platforms
+`paging-calculator` builds and runs on Linux, macOS, and Windows.
+
 # MSRV
 The MSRV is `1.70.0` stable.
 
