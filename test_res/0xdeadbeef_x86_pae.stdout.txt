@@ -1,4 +1,4 @@
-Page Table Calculator (v0.3.0): x86 32-bit paging with PAE
+Page Table Calculator (v0.4.0): x86 32-bit paging with PAE
 x86 with the Physical Address Extension (PAE) paging uses a 3-level page table,
 that enables to access more than 32-bit of physical address space. The page
 is indexed by 12 bits, which results in a page-size of 4096 bytes. Tables

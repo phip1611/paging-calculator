@@ -1,4 +1,4 @@
-Page Table Calculator (v0.3.0): x86_64 paging
+Page Table Calculator (v0.4.0): x86_64 paging
 x86_64 paging uses a 4-level page table. The page is indexed by 12 bits,
 which results in a page-size of 4096 bytes. Each page table is indexed by 9
 bits and has 2^9 == 512 entries. Each page-table entry is 64-bit in size. Hence,
