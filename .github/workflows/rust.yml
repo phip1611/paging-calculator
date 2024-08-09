@@ -12,7 +12,7 @@ jobs:
       matrix:
         runs-on: [ macos-latest, ubuntu-latest, windows-latest ]
         # MSRV
-        rust: [ 1.70.0, stable, nightly ]
+        rust: [ 1.75.0, stable, nightly ]
     name: Build + Unit Tests
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -41,7 +41,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.70.0 # MSVR
+          - 1.75.0 # MSVR
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust toolchain

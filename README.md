@@ -22,7 +22,7 @@ The following screenshot summarizes its functionality:
 `paging-calculator` builds and runs on Linux, macOS, and Windows.
 
 # MSRV
-The MSRV is `1.70.0` stable.
+The MSRV is `1.75.0` stable.
 
 # Trivia
 I worked on a project where I need to set up page-tables on my own. I had a few problems to find out

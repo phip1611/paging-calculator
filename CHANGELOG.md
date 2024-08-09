@@ -1,6 +1,8 @@
 # Changelog for Paging Address Calculator / `paging-calculator`
 
 ## v0.4.0
+- **BREAKING** The MSRV is `1.75.0` stable.
+- Updated dependencies.
 - The binary is now much smaller (637 KiB on Linux instead of 883 KiB)
 
 ## v0.3.0 (2023-09-22)
