@@ -21,6 +21,8 @@ exclude = [
 [profile.release]
 lto = true
 codegen-units = 1
+strip = true
+opt-level = "z"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
