@@ -23,9 +23,9 @@ SOFTWARE.
 */
 #[derive(Copy, Clone, Debug, derive_more::Display, PartialEq, Eq)]
 pub enum AddrWidth {
-    #[display(fmt = "32-bits")]
+    #[display("32-bits")]
     Bits32,
-    #[display(fmt = "64-bits")]
+    #[display("64-bits")]
     Bits64,
 }
 
