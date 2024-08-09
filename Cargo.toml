@@ -34,7 +34,7 @@ version = "0.99.17"
 version = "0.49.0"
 
 [dependencies.clap]
-version = "4.4.4"
+version = "4.5.14"
 features = [
     "std",
     "color",
