@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_calc_page_table_lookup_meta_info_x86() {
-        // a 32-bit address written so that it is seperated by the corresponding
+        // a 32-bit address written so that it is separated by the corresponding
         // levels of page table on x86.
         #[allow(clippy::unusual_byte_groupings)]
         let addr = 0b1111111111_1010101010_001111000011.into();
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn test_calc_page_table_lookup_meta_info_x86_pae() {
-        // a 32-bit address written so that it is seperated by the corresponding
+        // a 32-bit address written so that it is separated by the corresponding
         // levels of page table on x86 with PAE.
         #[allow(clippy::unusual_byte_groupings)]
         let addr = 0b10_111111111_010101010_001111000011.into();

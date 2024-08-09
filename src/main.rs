@@ -83,7 +83,7 @@ fn configure_ansi_setting(cfg: ColorOption) {
     USE_ANSI.store(use_ansi, Ordering::SeqCst);
 }
 
-/// Performs the auto detection to see if stdout points to a TTY. If this is
+/// Performs the auto-detection to see if stdout points to a TTY. If this is
 /// the case, I expect that ANSI escape sequences are supported.
 fn ansi_auto_detection() -> bool {
     atty::is(atty::Stream::Stdout)

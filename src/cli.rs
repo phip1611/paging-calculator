@@ -48,8 +48,8 @@ impl VirtualAddress {
 /// via the CLI.
 #[derive(Copy, Clone, Debug, derive_more::Display, PartialOrd, PartialEq, Ord, Eq, Hash)]
 pub enum VirtualAddressError {
-    /// The virtual address must beginn with the prefix 0x.
-    #[display("The virtual address must beginn with the prefix 0x.")]
+    /// The virtual address must begin with the prefix 0x.
+    #[display("The virtual address must begin with the prefix 0x.")]
     MissingPrefix,
     /// The virtual address could not be parsed as number as `u64`
     #[display("The virtual address could not be parsed as number as `u64`.")]
