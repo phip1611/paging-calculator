@@ -8,13 +8,13 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust:
-          - stable
-          - nightly
-          - 1.70.0 # MSVR
+        runs-on: [ macos-latest, ubuntu-latest, windows-latest ]
+        # MSRV
+        rust: [ 1.75.0, stable, nightly ]
+    name: Build + Unit Tests
+    runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust toolchain
@@ -22,8 +22,6 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - uses: Swatinem/rust-cache@v2
-        with:
-          key: "rust-${{ matrix.rust }}"
       - name: Check
         run: cargo check --all-targets --verbose
       - name: Build
@@ -43,7 +41,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - 1.70.0 # MSVR
+          - 1.75.0 # MSVR
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust toolchain
@@ -52,8 +50,6 @@ jobs:
           toolchain: ${{ matrix.rust }}
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
-        with:
-          key: "rust-${{ matrix.rust }}"
       - name: Rustfmt
         run: cargo fmt -- --check
       - name: Clippy

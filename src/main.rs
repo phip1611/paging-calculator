@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2023 Philipp Schuster
+Copyright (c) 2024 Philipp Schuster
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,8 @@ SOFTWARE.
 #![allow(
     clippy::suboptimal_flops,
     clippy::redundant_pub_crate,
-    clippy::fallible_impl_from
+    clippy::fallible_impl_from,
+    clippy::multiple_crate_versions
 )]
 // allow: required because of derive_more::Display macro
 #![allow(clippy::use_self)]
@@ -82,7 +83,7 @@ fn configure_ansi_setting(cfg: ColorOption) {
     USE_ANSI.store(use_ansi, Ordering::SeqCst);
 }
 
-/// Performs the auto detection to see if stdout points to a TTY. If this is
+/// Performs the auto-detection to see if stdout points to a TTY. If this is
 /// the case, I expect that ANSI escape sequences are supported.
 fn ansi_auto_detection() -> bool {
     atty::is(atty::Stream::Stdout)

@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2023 Philipp Schuster
+Copyright (c) 2024 Philipp Schuster
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,11 +48,11 @@ impl VirtualAddress {
 /// via the CLI.
 #[derive(Copy, Clone, Debug, derive_more::Display, PartialOrd, PartialEq, Ord, Eq, Hash)]
 pub enum VirtualAddressError {
-    /// The virtual address must beginn with the prefix 0x.
-    #[display = "The virtual address must beginn with the prefix 0x."]
+    /// The virtual address must begin with the prefix 0x.
+    #[display("The virtual address must begin with the prefix 0x.")]
     MissingPrefix,
     /// The virtual address could not be parsed as number as `u64`
-    #[display = "The virtual address could not be parsed as number as `u64`."]
+    #[display("The virtual address could not be parsed as number as `u64`.")]
     ParseIntError,
 }
 

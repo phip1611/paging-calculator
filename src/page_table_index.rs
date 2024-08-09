@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2023 Philipp Schuster
+Copyright (c) 2024 Philipp Schuster
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,7 @@ pub fn one_bitmask_of_length(mut val: u64) -> u64 {
 #[derive(Debug)]
 pub struct PageTableLookupMetaInfo {
     /// Virtual address used to get the lookup info.
+    #[allow(unused)]
     pub v_addr: VirtualAddress,
     /// Used level for the lookup.
     pub level: u64,
@@ -55,8 +56,10 @@ pub struct PageTableLookupMetaInfo {
     pub index: u64,
     /// Amount of bits needed for a shift of the virtual address so that the
     /// index bits stand on the most-right position.
+    #[allow(unused)]
     pub shift: u64,
     /// Like `v_addr` but all bits irrelevant for the given level are zeroes.
+    #[allow(unused)]
     pub relevant_part_of_addr: u64,
 }
 
@@ -126,7 +129,7 @@ mod tests {
 
     #[test]
     fn test_calculate_page_table_index_x86() {
-        // a 32-bit address written so that it is seperated by the corresponding levels
+        // a 32-bit address written so that it is separated by the corresponding levels
         // of page table on x86.
         #[allow(clippy::unusual_byte_groupings)]
         let addr = 0b1111111111_1010101010_001111000011;
@@ -168,7 +171,7 @@ mod tests {
 
     #[test]
     fn test_calculate_page_table_index_x86_pae() {
-        // a 32-bit address written so that it is seperated by the corresponding
+        // a 32-bit address written so that it is separated by the corresponding
         // levels of page table on x86 with PAE.
         #[allow(clippy::unusual_byte_groupings)]
         let addr = 0b10_111111111_010101010_001111000011;

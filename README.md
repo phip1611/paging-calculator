@@ -18,10 +18,13 @@ The following screenshot summarizes its functionality:
 
 ![Screenshot showing the usage of paging-calculator.](screenshot.png "Screenshot showing the usage of paging-calculator.")
 
+# Supported Platforms
+`paging-calculator` builds and runs on Linux, macOS, and Windows.
+
 # MSRV
-The MSRV is `1.70.0` stable.
+The MSRV is `1.75.0` stable.
 
 # Trivia
-I worked on a project where I need to set up page-tables on my own. I had a few problems to find out
-what I actually have to do and what indices are used at which level. With the help of this utility,
-things are a little clearer to me now.
+I worked on a project where I need to set up page-tables on my own. I had a few
+problems to find out what I actually have to do and what indices are used at
+which level. With the help of this utility, this task becomes quite easy.
