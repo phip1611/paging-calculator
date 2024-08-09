@@ -47,6 +47,7 @@ pub fn one_bitmask_of_length(mut val: u64) -> u64 {
 #[derive(Debug)]
 pub struct PageTableLookupMetaInfo {
     /// Virtual address used to get the lookup info.
+    #[allow(unused)]
     pub v_addr: VirtualAddress,
     /// Used level for the lookup.
     pub level: u64,
@@ -55,8 +56,10 @@ pub struct PageTableLookupMetaInfo {
     pub index: u64,
     /// Amount of bits needed for a shift of the virtual address so that the
     /// index bits stand on the most-right position.
+    #[allow(unused)]
     pub shift: u64,
     /// Like `v_addr` but all bits irrelevant for the given level are zeroes.
+    #[allow(unused)]
     pub relevant_part_of_addr: u64,
 }
 
