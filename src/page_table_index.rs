@@ -68,9 +68,9 @@ pub struct PageTableLookupMetaInfo {
 ///
 /// # Parameters
 /// - `index_bits` - number of how many bits index into each page table (e.g.
-///                  10 on x86 or 9 on x86 with PAE or `x86_64`)
+///   10 on x86 or 9 on x86 with PAE or `x86_64`)
 /// - `page_offset_bits` - number of how many bits index into the page (e.g. 12
-///                        on `x86` and `x86_64`, i.e., 4096 bytes per page)
+///   on `x86` and `x86_64`, i.e., 4096 bytes per page)
 /// - `addr` - Virtual Address used to look-up the page table.
 /// - `level` - Level of the page table. Must be bigger than zero!
 /// - `addr_width` - Width of the address. See [`AddrWidth`].

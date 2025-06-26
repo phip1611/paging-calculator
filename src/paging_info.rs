@@ -25,7 +25,7 @@ SOFTWARE.
 
 use crate::addr_width::AddrWidth;
 use crate::cli::{Architecture, VirtualAddress};
-use crate::page_table_index::{calculate_page_table_index, PageTableLookupMetaInfo};
+use crate::page_table_index::{PageTableLookupMetaInfo, calculate_page_table_index};
 
 #[derive(Debug)]
 pub struct PagingImplInfo {
@@ -112,8 +112,7 @@ pub mod impls {
     pub const X86_PAE: PagingImplInfo = PagingImplInfo {
         name: "x86 32-bit paging with PAE",
         levels: 3,
-        description:
-            "x86 with the Physical Address Extension (PAE) paging uses a 3-level page table,\n\
+        description: "x86 with the Physical Address Extension (PAE) paging uses a 3-level page table,\n\
             that enables to access more than 32-bit of physical address space. The page\n\
             is indexed by 12 bits, which results in a page-size of 4096 bytes. Tables\n\
             at level 1 and 2 are indexed by 9 bits and have 2^9 == 512 entries. The third-\n\
