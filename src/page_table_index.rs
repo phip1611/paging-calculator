@@ -28,19 +28,6 @@ SOFTWARE.
 use crate::addr_width::AddrWidth;
 use crate::cli::VirtualAddress;
 
-/// Creates a bitmask with only ones from a number that describes how many ones
-/// there should be `(0..=64)`. The ones are filled in from the right side.
-pub fn one_bitmask_of_length(mut val: u64) -> u64 {
-    assert!(val <= 64);
-    let mut bitmask = 0;
-    while val > 0 {
-        bitmask <<= 1;
-        bitmask |= 1;
-        val -= 1;
-    }
-    bitmask
-}
-
 /// Contains the page table lookup meta info for a virtual address and a certain
 /// level. Meta means that only information for the lookup itself are included
 /// but not the lookup itself.
@@ -100,7 +87,7 @@ pub fn calculate_page_table_index(
 
     let shifted_addr = addr >> shift;
 
-    let bitmask = one_bitmask_of_length(index_bits);
+    let bitmask = bit_ops::bitops_u64::create_mask(index_bits);
 
     let index = shifted_addr & bitmask;
     let relevant_part_of_addr = addr & (bitmask << shift);
@@ -117,15 +104,6 @@ pub fn calculate_page_table_index(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_one_bitmask_of_length() {
-        assert_eq!(one_bitmask_of_length(0), 0);
-        assert_eq!(one_bitmask_of_length(1), 1);
-        assert_eq!(one_bitmask_of_length(2), 0b11);
-        assert_eq!(one_bitmask_of_length(4), 0xf);
-        assert_eq!(one_bitmask_of_length(64), !0);
-    }
 
     #[test]
     fn test_calculate_page_table_index_x86() {
