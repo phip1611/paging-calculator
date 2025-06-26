@@ -41,8 +41,6 @@ SOFTWARE.
     clippy::fallible_impl_from,
     clippy::multiple_crate_versions
 )]
-// allow: required because of derive_more::Display macro
-#![allow(clippy::use_self)]
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 #![deny(rustdoc::all)]

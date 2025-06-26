@@ -30,10 +30,17 @@ opt-level = "z"
 version = "0.2"
 
 [dependencies.derive_more]
-version = "1.0"
+version = "2.0"
 default-features = false
 features = [
     "display"
+]
+
+[dependencies.thiserror]
+version = "2.0"
+default-features = false
+features = [
+    "std"
 ]
 
 [dependencies.nu-ansi-term]
@@ -42,13 +49,13 @@ version = "0.50"
 [dependencies.clap]
 version = "4.5"
 features = [
-    "std",
     "color",
-    "help",
-    "usage",
-    "error-context",
-    "suggestions",
     "derive",
+    "error-context",
+    "help",
+    "std",
+    "suggestions",
     "unicode",
-    "wrap_help"
+    "usage",
+    "wrap_help",
 ]

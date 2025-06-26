@@ -23,22 +23,15 @@ SOFTWARE.
 */
 
 use clap::{Parser, Subcommand, ValueEnum};
-use std::error::Error;
-use std::fmt;
 use std::str::FromStr;
 
 /// A virtual address in hexadecimal representation. It be provided to the CLI
 /// as `0x123` or `0x1234_5678`. The `0x` prefix is required. It must be within
 /// the range of `u64`. Can be truncated to `u32`. In this case, the upper 32
 /// bits are discarded.
-#[derive(Copy, Clone, Debug, PartialOrd, PartialEq, Ord, Eq, Hash)]
+#[derive(Copy, Clone, Debug, PartialOrd, PartialEq, Ord, Eq, Hash, derive_more::Display)]
+#[display("0x{_0:016x}")]
 pub struct VirtualAddress(u64);
-
-impl fmt::Display for VirtualAddress {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "0x{:016x}", self.0)
-    }
-}
 
 impl VirtualAddress {
     const PREFIX: &'static str = "0x";
@@ -46,17 +39,15 @@ impl VirtualAddress {
 
 /// Describes errors that happened when users tries to input a [`VirtualAddress`]
 /// via the CLI.
-#[derive(Copy, Clone, Debug, derive_more::Display, PartialOrd, PartialEq, Ord, Eq, Hash)]
+#[derive(Copy, Clone, Debug, thiserror::Error, PartialOrd, PartialEq, Ord, Eq, Hash)]
 pub enum VirtualAddressError {
     /// The virtual address must begin with the prefix 0x.
-    #[display("The virtual address must begin with the prefix 0x.")]
+    #[error("virtual address must begin with the prefix 0x")]
     MissingPrefix,
-    /// The virtual address could not be parsed as number as `u64`
-    #[display("The virtual address could not be parsed as number as `u64`.")]
+    /// The virtual address could not be parsed as number of type `u64`.
+    #[error("virtual address could not be parsed as number of type `u64`")]
     ParseIntError,
 }
-
-impl Error for VirtualAddressError {}
 
 impl From<u64> for VirtualAddress {
     fn from(value: u64) -> Self {
