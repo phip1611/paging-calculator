@@ -1,5 +1,10 @@
 # Changelog for Paging Address Calculator / `paging-calculator`
 
+## unreleased
+- **BREAKING** The MSRV is `1.78.0` stable.
+- Rust edition 2021 -> 2024
+- Updated slogan/short description
+
 ## v0.4.0
 - **BREAKING** The MSRV is `1.75.0` stable.
 - Updated dependencies.
