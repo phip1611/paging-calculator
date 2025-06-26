@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-//! CLI utility that helps you to calculate indices into the page table from a
-//! virtual address. The tool knows multiple paging implementations, such as x86,
-//! x86 with PAE, x86_64 and x86_64 with a 5-level page table.
+//! A CLI utility that breaks down virtual addresses into their page table indices,
+//! helping you understand and debug paging behavior across multiple paging modes.
+//! Supports multiple paging implementations, such as x86, x86 with PAE, x86_64, and
+//! x86_64 with a 5-level page table.
 
 #![deny(
     clippy::all,
