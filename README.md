@@ -15,10 +15,11 @@ page-table level. It can be installed with
 ## Usage
 
 Valid inputs are:
-- `$ paging-calculator 0x1337`
-- `$ paging-calculator 0xdead_beef` (underscores are accepted)
+
+- `$ paging-calculator 0x1337 x86`
+- `$ paging-calculator 0xdead_beef x86_64` (underscores are accepted)
 - `$ paging-calculator 0xdead_beef x86 --pae` (underscores are accepted)
-- `$ paging-calculator 0xdead_beef x86_64`
+- `$ paging-calculator 0xdead_beef x86_64 --five-level`
 
 Type `$ paging-calculator help` to get a list of all supported options.
 
