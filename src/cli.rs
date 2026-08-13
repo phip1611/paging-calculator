@@ -111,10 +111,7 @@ impl FromStr for VirtualAddress {
 
         u64::from_str_radix(s_without_prefix, 16)
             .map(Self)
-            .map_err(|e| {
-                eprintln!("{e}");
-                VirtualAddressError::ParseIntError
-            })
+            .map_err(|_| VirtualAddressError::ParseIntError)
     }
 }
 
