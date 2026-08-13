@@ -129,7 +129,7 @@ pub struct CliArgs {
     #[command(subcommand)]
     pub architecture: Architecture,
 
-    #[arg(long, value_enum)]
+    #[arg(long, value_enum, global = true)]
     pub color: Option<ColorOption>,
 }
 
