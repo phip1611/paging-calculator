@@ -4,6 +4,9 @@
 - **BREAKING** The MSRV is `1.85.0` stable.
 - Rust edition 2021 -> 2024
 - Updated slogan/short description
+- Reject non-canonical x86_64 virtual addresses with a clear error.
+- Accept the global `--color` option before or after a subcommand.
+- Avoid duplicate diagnostics for malformed virtual addresses.
 
 ## v0.4.0
 - **BREAKING** The MSRV is `1.75.0` stable.
