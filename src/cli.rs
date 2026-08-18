@@ -35,6 +35,20 @@ pub struct VirtualAddress(u64);
 
 impl VirtualAddress {
     const PREFIX: &'static str = "0x";
+
+    /// Returns whether this address is canonical for the given x86_64 virtual
+    /// address width.
+    ///
+    /// An x86_64 virtual address is canonical when every bit above the most
+    /// significant implemented address bit is a copy of that bit. Therefore,
+    /// 4-level paging requires bits 63 through 48 to equal bit 47, while
+    /// 5-level paging requires bits 63 through 57 to equal bit 56.
+    fn is_canonical(self, address_bits: u32) -> bool {
+        debug_assert!((1..64).contains(&address_bits));
+
+        let unimplemented_bits = 64 - address_bits;
+        (((self.0 << unimplemented_bits) as i64) >> unimplemented_bits) as u64 == self.0
+    }
 }
 
 /// Describes errors that happened when users tries to input a [`VirtualAddress`]
@@ -47,6 +61,20 @@ pub enum VirtualAddressError {
     /// The virtual address could not be parsed as number of type `u64`.
     #[error("virtual address could not be parsed as number of type `u64`")]
     ParseIntError,
+}
+
+/// Describes errors found after all CLI arguments have been parsed.
+#[derive(Copy, Clone, Debug, thiserror::Error, PartialOrd, PartialEq, Ord, Eq, Hash)]
+pub enum CliValidationError {
+    /// The virtual address is not canonical for the selected x86_64 paging
+    /// mode.
+    #[error("{virtual_address} is not a canonical {address_bits}-bit x86_64 virtual address")]
+    NonCanonicalVirtualAddress {
+        /// The invalid virtual address.
+        virtual_address: VirtualAddress,
+        /// Number of virtual address bits implemented by the paging mode.
+        address_bits: u32,
+    },
 }
 
 impl From<u64> for VirtualAddress {
@@ -83,10 +111,7 @@ impl FromStr for VirtualAddress {
 
         u64::from_str_radix(s_without_prefix, 16)
             .map(Self)
-            .map_err(|e| {
-                eprintln!("{e}");
-                VirtualAddressError::ParseIntError
-            })
+            .map_err(|_| VirtualAddressError::ParseIntError)
     }
 }
 
@@ -104,8 +129,30 @@ pub struct CliArgs {
     #[command(subcommand)]
     pub architecture: Architecture,
 
-    #[arg(long, value_enum)]
+    #[arg(long, value_enum, global = true)]
     pub color: Option<ColorOption>,
+}
+
+impl CliArgs {
+    /// Validates relationships between parsed CLI arguments.
+    ///
+    /// In particular, x86_64 addresses must be canonical for the selected
+    /// paging mode. See [`VirtualAddress::is_canonical`] for the definition of
+    /// a canonical address.
+    pub fn validate(&self) -> Result<(), CliValidationError> {
+        let Some(address_bits) = self.architecture.virtual_address_bits() else {
+            return Ok(());
+        };
+
+        if self.virtual_address.is_canonical(address_bits) {
+            Ok(())
+        } else {
+            Err(CliValidationError::NonCanonicalVirtualAddress {
+                virtual_address: self.virtual_address,
+                address_bits,
+            })
+        }
+    }
 }
 
 /// Whether colors and other ANSI escape sequences should be used.
@@ -145,6 +192,18 @@ pub enum Architecture {
     },
 }
 
+impl Architecture {
+    /// Returns the implemented virtual address width when canonical address
+    /// validation applies.
+    const fn virtual_address_bits(self) -> Option<u32> {
+        match self {
+            Self::X86 { .. } => None,
+            Self::X86_64 { five_level: false } => Some(48),
+            Self::X86_64 { five_level: true } => Some(57),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -168,5 +227,78 @@ mod tests {
         assert_eq!(v_addr, Ok(0xdead_beef_1337_1337.into()));
         let v_addr = v_addr.unwrap();
         assert_eq!(u32::from(v_addr), 0x1337_1337);
+    }
+
+    #[test]
+    fn test_validate_x86_64_four_level_canonical_addresses() {
+        let mut args = CliArgs {
+            virtual_address: 0x0000_7fff_ffff_ffff.into(),
+            architecture: Architecture::X86_64 { five_level: false },
+            color: None,
+        };
+        assert_eq!(args.validate(), Ok(()));
+
+        args.virtual_address = 0xffff_8000_0000_0000.into();
+        assert_eq!(args.validate(), Ok(()));
+
+        args.virtual_address = 0x0000_8000_0000_0000.into();
+        assert!(matches!(
+            args.validate(),
+            Err(CliValidationError::NonCanonicalVirtualAddress {
+                address_bits: 48,
+                ..
+            })
+        ));
+
+        args.virtual_address = 0xffff_7fff_ffff_ffff.into();
+        assert!(matches!(
+            args.validate(),
+            Err(CliValidationError::NonCanonicalVirtualAddress {
+                address_bits: 48,
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn test_validate_x86_64_five_level_canonical_addresses() {
+        let mut args = CliArgs {
+            virtual_address: 0x00ff_ffff_ffff_ffff.into(),
+            architecture: Architecture::X86_64 { five_level: true },
+            color: None,
+        };
+        assert_eq!(args.validate(), Ok(()));
+
+        args.virtual_address = 0xff00_0000_0000_0000.into();
+        assert_eq!(args.validate(), Ok(()));
+
+        args.virtual_address = 0x0100_0000_0000_0000.into();
+        assert!(matches!(
+            args.validate(),
+            Err(CliValidationError::NonCanonicalVirtualAddress {
+                address_bits: 57,
+                ..
+            })
+        ));
+
+        args.virtual_address = 0xfeff_ffff_ffff_ffff.into();
+        assert!(matches!(
+            args.validate(),
+            Err(CliValidationError::NonCanonicalVirtualAddress {
+                address_bits: 57,
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn test_validate_x86_accepts_addresses_that_are_truncated() {
+        let args = CliArgs {
+            virtual_address: u64::MAX.into(),
+            architecture: Architecture::X86 { pae: false },
+            color: None,
+        };
+
+        assert_eq!(args.validate(), Ok(()));
     }
 }
